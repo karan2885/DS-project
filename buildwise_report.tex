@@ -1,0 +1,633 @@
+\documentclass[12pt,a4paper]{article}
+
+% ==================== PACKAGES ====================
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{xltabular} % Allows tables to break naturally across pages
+\usepackage{listings}
+\usepackage{array}
+
+% ==================== FORMATTING & STYLING ====================
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={BuildWise: Enterprise Residential Society Management System},
+    pdfauthor={Karan Bhojak}
+}
+
+% Colors for code and tables
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
+\definecolor{headerblue}{rgb}{0.12,0.29,0.49}
+
+\lstdefinestyle{javastyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegray},
+    keywordstyle=\color{headerblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=javastyle}
+
+% Clean 1, 2, 3 Section Headings (No 0.1, 0.2)
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{headerblue}}{\thesection}{1em}{}
+
+\titleformat{\subsection}
+{\normalfont\large\bfseries\color{headerblue}}{\thesubsection}{1em}{}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{BuildWise --- Data Structures \& Algorithms Technical Report}
+\fancyhead[R]{Karan Bhojak}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Table layout tuning
+\setlength{\extrarowheight}{3pt}
+
+% ==================== DOCUMENT ====================
+\begin{document}
+
+% ------------------- TITLE PAGE -------------------
+\begin{titlepage}
+    \centering
+    \vspace*{1.2cm}
+    
+    {\Huge \bfseries \color{headerblue} BuildWise \par}
+    \vspace{0.4cm}
+    {\LARGE \textbf{Enterprise Residential Building Management System} \par}
+    \vspace{0.2cm}
+    {\large \textit{Algorithmic Engineering \& Native In-Memory Data Structures Integration} \par}
+    
+    \vspace{1.5cm}
+    \rule{\linewidth}{1.2pt}
+    \vspace{0.8cm}
+    
+    \textbf{\Large Data Structures \& Algorithms (DSA) Course Project} \\
+    \vspace{0.3cm}
+    {\large Department of Computer Science \& Engineering} \\
+    {\large Institute of Technology, Nirma University}
+    
+    \vspace{2.5cm}
+    
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushleft} \large
+            \textbf{Submitted By:} \\
+            Karan Bhojak \\
+            Roll No: 23BCE056 \\
+            B.Tech CSE, Semester III
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushright} \large
+            \textbf{Course Instructor:} \\
+            Department of CSE \\
+            Nirma University, Ahmedabad
+        \end{flushright}
+    \end{minipage}
+    
+    \vfill
+    {\large Academic Year 2026--2027 \par}
+\end{titlepage}
+
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+% ==================== SECTION 1 ====================
+\section{Introduction}
+
+\textbf{BuildWise} is a full-stack, enterprise-grade Residential Society Management and Facility Infrastructure ERP designed to manage apartments, resident demographics, chronological maintenance billing, multi-tiered complaints, security gate visitors, and structural infrastructure from a unified platform. 
+
+While conventional enterprise web applications delegate all indexing, sorting, and retrieval operations to external database query engines as black boxes, \textbf{BuildWise was engineered with a foundational focus on Data Structures and Algorithms (DSA)}. The core architectural philosophy of the project is the deployment of an \textbf{In-Memory Java Data Structure Engine} running directly within the Spring Boot Java Virtual Machine (JVM). Operational hot data is maintained across custom, mathematically rigorous data structures, ensuring sub-millisecond retrieval, optimal caching locality, and guaranteed theoretical time complexities.
+
+Persistent state is safeguarded through asynchronous synchronization with a MongoDB document database. BuildWise features an interactive, real-time \textbf{Data Structure Engine Monitor} in its React frontend, enabling evaluators and system administrators to inspect active node balances, heap orders, queue positions, tree heights, and live balancing rotations during active operations.
+
+% ==================== SECTION 2 ====================
+\section{Objectives}
+
+The principal objectives governing the design and implementation of BuildWise are:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Comprehensive Society Automation:} Deliver a centralized, modern management system covering resident registry, financial billing, complaint lifecycle, infrastructure topology, and gate security.
+    \item \textbf{High-Performance Resident Lookup:} Implement a self-balancing AVL Tree to index resident flats with guaranteed logarithmic time complexity ($O(\log N)$), eliminating binary search tree degradation.
+    \item \textbf{Dual-Pipeline Complaint Scheduling:} Architect a two-tiered ticket resolution workflow combining a First-In-First-Out (FIFO) queue for routine complaints with a Binary Min-Heap Priority Queue for life-safety emergency dispatch.
+    \item \textbf{Chronological Financial Accounting:} Build a custom, pointer-based Binary Search Tree (BST) keyed by month-year ($YYYY\text{-}MM$) allowing chronological in-order ledger generation and pruned range queries.
+    \item \textbf{Topological Spatial Navigation:} Model the multi-building physical society layout as an unweighted Adjacency List Graph and implement Breadth-First Search (BFS) to compute shortest paths from security gates to individual flats and amenities.
+    \item \textbf{Transactional Administrative Reversibility:} Implement a LIFO Stack using the Memento design pattern to guarantee instantaneous $O(1)$ undo capabilities for destructive administrative mutations.
+    \item \textbf{Dual-Layer State Synchronization:} Maintain rigorous synchronization between volatile high-speed in-memory data structures and a persistent MongoDB database.
+\end{itemize}
+
+% ==================== SECTION 3 ====================
+\section{Technologies Used}
+
+BuildWise employs a decoupled multi-tier architecture pairing a Java 21 backend with a high-performance React 18 client. Table~\ref{tab:tech_stack} summarizes the primary technologies utilized.
+
+% Multi-page table: breaks across pages without leaving blank gaps!
+\begin{xltabular}{\textwidth}{l p{4.0cm} X}
+\caption{Technologies Used and Their Architectural Purpose} \label{tab:tech_stack} \\
+\toprule
+\textbf{Technology} & \textbf{Category} & \textbf{Architectural Purpose} \\
+\midrule
+\endfirsthead
+
+\multicolumn{3}{c}{\textit{Table \ref{tab:tech_stack} (Continued from previous page)}} \\
+\toprule
+\textbf{Technology} & \textbf{Category} & \textbf{Architectural Purpose} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{3}{r}{\textit{Continued on next page\dots}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+\textbf{Java 21 (LTS)} & Programming Language & Core backend language providing strong typing, pattern matching, records, and virtual thread concurrency. \\
+\textbf{Spring Boot 3.3.5} & Backend Framework & Microservices engine handling dependency injection, RESTful controllers, scheduling, and validation. \\
+\textbf{In-Memory DS Engine} & Custom Java Structures & Native Java classes managing AVL Trees, BSTs, Heaps, Stacks, Queues, Graphs, and Linked Lists in RAM. \\
+\textbf{MongoDB} & Document Database & Persistent NoSQL storage preserving entity state across application restarts and power cycles. \\
+\textbf{Spring Data MongoDB} & Object-Document Mapper & Provides declarative data repositories, JSON serialization, and dynamic query mapping. \\
+\textbf{React 18 \& Vite} & Frontend User Interface & Fast Single Page Application (SPA) providing component-based interfaces and hot module reloading. \\
+\textbf{Tailwind CSS} & UI Styling Framework & Utility-first CSS framework delivering responsive, enterprise-grade dashboard aesthetics. \\
+\textbf{Lucide React} & Iconography Library & Visual UI icons representing data structures, buildings, and metrics. \\
+\textbf{Apache Maven} & Build \& Dependency Tool & Manages Java dependencies, packaging, and compiler configurations. \\
+\end{xltabular}
+
+% ==================== SECTION 4 ====================
+\section{System Configuration}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Application Architecture:} Decoupled Multi-Tier Architecture (SPA Client $\leftrightarrow$ RESTful API $\leftrightarrow$ In-Memory DS Engine $\leftrightarrow$ Persistent NoSQL Database).
+    \item \textbf{Backend Runtime:} OpenJDK 21 (64-bit JVM).
+    \item \textbf{Backend Framework:} Spring Boot 3.3.5.
+    \item \textbf{Backend Entry Point:} \texttt{com.buildwise.BuildWiseApplication}.
+    \item \textbf{Backend Port:} \texttt{http://localhost:8080}.
+    \item \textbf{Frontend Runtime:} Node.js v20.x, NPM v10.x.
+    \item \textbf{Frontend Port:} \texttt{http://localhost:5173}.
+    \item \textbf{Database Connection:} MongoDB running at \texttt{mongodb://localhost:27017/buildwise\_db}.
+    \item \textbf{Seed Data Profile:} Pre-loaded with Green Valley Residency, Surat topology (30+ residents, multi-wing building nodes, pre-configured maintenance records, and active tickets).
+\end{itemize}
+
+% ==================== SECTION 5 ====================
+\section{Project Structure}
+
+The BuildWise codebase is organized into modular packages separating presentation, business logic, data models, persistence repositories, and in-memory data structures:
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{\texttt{com.buildwise}:} Main application bootstrap and configuration.
+    \item \textbf{\texttt{com.buildwise.config}:} Cross-Origin Resource Sharing (CORS) setup, and \texttt{DemoDataInitializer} for database bootstrapping and data structure rehydration.
+    \item \textbf{\texttt{com.buildwise.model}:} Domain entities including \texttt{Resident}, \texttt{MaintenanceRecord}, \texttt{Complaint}, \texttt{ComplaintActivity}, \texttt{BuildingNode}, \texttt{Expense}, \texttt{Notice}, \texttt{Visitor}, \texttt{AdminOperation}, and \texttt{SocietyConfig}.
+    \item \textbf{\texttt{com.buildwise.datastructures}:} Core algorithmic engine containing \texttt{ResidentAVLTree}, \texttt{MaintenanceBST}, \texttt{BuildingGraph}, \texttt{ComplaintPriorityManager}, \texttt{ComplaintQueueManager}, \texttt{UndoManager}, \texttt{ResidentActivityManager}, and \texttt{PaymentRecordManager}.
+    \item \textbf{\texttt{com.buildwise.service}:} Business service layer orchestrating mutations between MongoDB repositories and in-memory data structures.
+    \item \textbf{\texttt{com.buildwise.controller}:} RESTful endpoints routing client requests to service managers and exposing internal data structure metrics.
+    \item \textbf{\texttt{com.buildwise.dto}:} Data Transfer Objects for complaint submissions, resolution reports, undo payloads, and live statistical metrics.
+    \item \textbf{\texttt{com.buildwise.repository}:} Spring Data MongoDB interfaces for document CRUD operations.
+    \item \textbf{\texttt{frontend/src/pages}:} React interfaces including \texttt{DashboardPage}, \texttt{ResidentsPage}, \texttt{MaintenancePage}, \texttt{ComplaintsPage}, \texttt{BuildingStructurePage}, \texttt{VisitorsPage}, \texttt{ExpensesPage}, \texttt{NoticesPage}, and \texttt{DataStructureMonitorPage}.
+\end{itemize}
+
+% ==================== SECTION 6 ====================
+\section{Application Modules}
+
+\subsection{Resident Management Module}
+Manages the resident directory across wings (Wing A, Wing B) and individual flats. Supports resident onboarding, contact management, ownership categorization (\texttt{OWNER} vs. \texttt{TENANT}), move-in dates, and instantaneous $O(\log N)$ flat search backed by a self-balancing AVL Tree.
+
+\subsection{Maintenance \& Financial Ledger Module}
+Tracks chronological maintenance levies, monthly collections, penalty calculations for overdue dues, payment recording via multiple modes (UPI, Cash, Bank Transfer), and automatic receipt number generation. Utilizes a custom Binary Search Tree to deliver chronological financial reports.
+
+\subsection{Complaint Management Pipeline Module}
+Implements a dual-queue architecture for society grievance redressal. Routine complaints are sequenced through a FIFO queue guaranteeing temporal fairness. Critical emergencies bypass the queue into a Binary Min-Heap Priority Queue, dislodging lower-severity issues.
+
+\subsection{Supporting Society Infrastructure Modules}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Building Graph \& Navigation:} Renders an interactive spatial graph of the society layout, computing shortest routes between facilities via Breadth-First Search (BFS).
+    \item \textbf{Society Expenses:} Aggregates operational expenditures (security, elevator maintenance, landscape gardening) using dynamic arrays with spatial cache locality.
+    \item \textbf{Notices \& Circulars:} Publishes society broadcasts using partitioned priority sorting ensuring pinned emergency notices remain anchored at the top.
+    \item \textbf{Visitor Security Gate:} Validates visitor entries and blocks duplicate active visitor records via fast hash lookups.
+    \item \textbf{Administrative Undo Engine:} Provides transactional rollback of accidental administrative modifications using a LIFO Stack.
+\end{itemize}
+
+% ==================== SECTION 7 ====================
+\section{Data Model}
+
+The operational domain of BuildWise is mapped to normalized entity models stored as BSON documents in MongoDB and cached in the JVM. Table~\ref{tab:data_model} outlines the primary data models.
+
+% Multi-page data model table
+\begin{xltabular}{\textwidth}{l p{4.2cm} X}
+\caption{BuildWise Core Entity Models and Attributes} \label{tab:data_model} \\
+\toprule
+\textbf{Entity Model} & \textbf{Primary Identifiers} & \textbf{Information Stored} \\
+\midrule
+\endfirsthead
+
+\multicolumn{3}{c}{\textit{Table \ref{tab:data_model} (Continued from previous page)}} \\
+\toprule
+\textbf{Entity Model} & \textbf{Primary Identifiers} & \textbf{Information Stored} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{3}{r}{\textit{Continued on next page\dots}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+\texttt{Resident} & \texttt{residentId}, \texttt{flatNumber} & Resident name, phone, email, building wing, occupancy status (\texttt{OWNER}/\texttt{TENANT}), move-in date, active status. \\
+\texttt{MaintenanceRecord} & \texttt{recordId}, \texttt{monthYear} & Flat number, billing period (\texttt{YYYY-MM}), maintenance amount, late fee, total due, payment status, receipt number. \\
+\texttt{Complaint} & \texttt{complaintId}, \texttt{flatNumber} & Category, priority rank (\texttt{CRITICAL}, \texttt{HIGH}, \texttt{MEDIUM}, \texttt{LOW}), status, assignment staff, activity trail. \\
+\texttt{ComplaintActivity} & \texttt{activityId}, \texttt{complaintId} & Timestamped transition log (action name, technician remarks, performing authority) chained sequentially. \\
+\texttt{BuildingNode} & \texttt{nodeId}, \texttt{parentId} & Structural entity (Building, Floor, Flat, Amenity), spatial type, topological connectivity metadata. \\
+\texttt{Expense} & \texttt{expenseId}, \texttt{category} & Expenditure title, invoice amount, disbursement date, payment mode, vendor remarks. \\
+\texttt{Notice} & \texttt{noticeId}, \texttt{publicationDate} & Broadcast title, bulletin body, author, pinned flag, target audience. \\
+\texttt{Visitor} & \texttt{visitorId}, \texttt{phone} & Visitor name, phone, visiting flat number, purpose of entry, vehicle number, active check-in/out timestamps. \\
+\texttt{AdminOperation} & \texttt{operationId}, \texttt{timestamp} & Reversible administrative action metadata, operation category, entity type, JSON before/after state snapshots. \\
+\end{xltabular}
+
+% ==================== SECTION 8 ====================
+\section{Resident Management (Detailed)}
+
+The Resident Management module serves as the primary demographic directory of the housing society. When an administrator adds, updates, or deletes a resident:
+\begin{enumerate}[leftmargin=1.5em]
+    \item The service validates flat assignment uniqueness to prevent duplicate occupancy conflicts.
+    \item The document is committed to the MongoDB \texttt{residents} collection.
+    \item The in-memory \textbf{Resident AVL Tree} inserts the resident node using the normalized flat number (e.g., \texttt{A-102}) as the indexing key.
+    \item If the balance factor of any ancestor node deviates outside the permitted set $\{-1, 0, 1\}$, self-balancing tree rotations are automatically executed in $O(1)$ pointer assignments.
+    \item An initial onboarding event node is prepended to the global \texttt{ResidentActivity} linked list.
+    \item A reversible memento is pushed onto the administrative Undo Stack.
+\end{enumerate}
+
+% ==================== SECTION 9 ====================
+\section{Maintenance Management (Detailed)}
+
+Maintenance accounts are maintained on a monthly billing cycle. The key operational workflows comprise:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Ledger Generation:} Generates recurring maintenance dues across all registered occupied flats for a designated month-year (\texttt{YYYY-MM}).
+    \item \textbf{Status Transitions:} Records transitions between \texttt{UNPAID}, \texttt{PAID}, and \texttt{OVERDUE}. Overdue penalties are computed dynamically based on the grace period:
+    \begin{equation}
+        \text{Total Payable} = \text{Base Amount} + \text{Late Fee}
+    \end{equation}
+    \item \textbf{Payment Settlement:} Upon payment receipt, the system marks the record as \texttt{PAID}, assigns a unique tracking receipt (\texttt{RCP-XXXXX}), updates the dynamic array ledger, and recalculates monthly aggregates in the custom Binary Search Tree.
+    \item \textbf{Historical Range Queries:} Enables administrators to filter collections over custom fiscal quarters (e.g., \texttt{2026-01} to \texttt{2026-06}) by executing pruned BST traversals.
+\end{itemize}
+
+% ==================== SECTION 10 ====================
+\section{Complaint Management (Detailed)}
+
+Complaint processing in BuildWise resolves grievances through a **Dual-Pipeline Architecture** that separates routine maintenance from life-safety emergencies.
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+                         [Resident Submits Complaint]
+                                      |
+                       +--------------+--------------+
+                       |                             |
+             (Routine Ticket:                       (Emergency Ticket:
+              LOW / MEDIUM)                         HIGH / CRITICAL)
+                       |                             |
+                       v                             v
+            +--------------------+        +--------------------+
+            |   FIFO Queue       |        |   Priority Queue   |
+            |   (ArrayDeque)     |        |   (Min-Heap)       |
+            +--------------------+        +--------------------+
+                       |                             |
+            [First-Come First-Served]     [Highest Severity First]
+                       |                             |
+                       +--------------+--------------+
+                                      |
+                        [Assigned to Field Staff]
+                                      |
+                     [Complaint Activity LinkedList]
+                                      |
+                       [Resolved & State Archived]
+\end{verbatim}
+\caption{Dual-Pipeline Complaint Scheduling Architecture}
+\label{fig:complaint_pipeline}
+\end{figure}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Routine Pipeline:} Complaints marked \texttt{LOW} or \texttt{MEDIUM} (e.g., garden maintenance, intercom buzzing) are placed in a FIFO queue. Workers pick tickets in strict arrival sequence, preventing ticket starvation.
+    \item \textbf{Emergency Pipeline:} Complaints marked \texttt{HIGH} or \texttt{CRITICAL} (e.g., gas leak, main elevator shutdown) enter a Binary Min-Heap Priority Queue. The highest severity rank bubbles directly to the root in $O(\log N)$ time, ensuring instant triage.
+    \item \textbf{Audit Trail:} Each ticket maintains an internal linked list of \texttt{ComplaintActivity} nodes tracking every status change, assigned technician contact, work performed, and resolution sign-off.
+\end{itemize}
+
+% ==================== SECTION 11 ====================
+\section{DSA Concept A --- Resident Self-Balancing AVL Tree}
+
+\subsection{Theoretical Foundations}
+An **AVL Tree** (named after Adelson-Velsky and Landis) is a self-balancing Binary Search Tree where the heights of the two child subtrees of any node differ by at most one. The **Balance Factor ($BF$)** of a node $u$ is defined as:
+\begin{equation}
+    BF(u) = \text{height}(u.\text{left}) - \text{height}(u.\text{right}) \quad \text{where} \quad BF(u) \in \{-1, 0, 1\}
+\end{equation}
+The height of any node is recursively computed as:
+\begin{equation}
+    \text{height}(u) = 1 + \max(\text{height}(u.\text{left}), \text{height}(u.\text{right}))
+\end{equation}
+
+\subsection{Implementation in BuildWise}
+In society ERPs, flat numbers follow strict sequential numbering (e.g., \texttt{A-101}, \texttt{A-102}, \texttt{A-103}). In an unaugmented BST, sequential insertion leads to a degenerate tree with a height of $N$, reducing search operations to a slow $O(N)$ linear scan.
+
+The \texttt{ResidentAVLTree} class in BuildWise enforces self-balancing via four classical rotation transformations:
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Left-Left (LL) Heavy:} Resolved via a \textbf{Single Right Rotation}.
+    \item \textbf{Right-Right (RR) Heavy:} Resolved via a \textbf{Single Left Rotation}.
+    \item \textbf{Left-Right (LR) Heavy:} Resolved via a \textbf{Double Rotation} (Left rotate on child, then Right rotate on node).
+    \item \textbf{Right-Left (RL) Heavy:} Resolved via a \textbf{Double Rotation} (Right rotate on child, then Left rotate on node).
+\end{enumerate}
+
+\subsection{Complexity Analysis}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Search Time Complexity:} Strictly bounded by $\mathcal{O}(\log N)$. Maximum tree height is bounded by:
+    \begin{equation}
+        h < 1.44 \log_2(N + 2) - 0.328
+    \end{equation}
+    \item \textbf{Insertion \& Deletion Time Complexity:} $\mathcal{O}(\log N)$, requiring at most two rotations for insert and $\mathcal{O}(\log N)$ rotations propagating to the root on delete.
+    \item \textbf{Space Complexity:} $\mathcal{O}(N)$ to store $N$ resident nodes and pointer references.
+\end{itemize}
+
+% ==================== SECTION 12 ====================
+\section{DSA Concept B --- Building Spatial Graph}
+
+\subsection{Theoretical Foundations}
+A **Graph** $G = (V, E)$ consists of a set of vertices $V$ and edges $E$. When modeling physical layouts with corridors, multiple access gates, and amenities, trees cannot represent cyclic paths or alternate access routes. BuildWise implements an **Adjacency List** representation using:
+\begin{equation}
+    \text{AdjacencyList}: \text{Map}\langle \text{String}, \text{List}\langle \text{Edge}\rangle\rangle
+\end{equation}
+
+\subsection{Implementation in BuildWise}
+The \texttt{BuildingGraph} class models the physical spatial connectivity of Green Valley Residency:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Vertices ($V$):} Security Gate, Building Wings (Wing A, Wing B), Floors (Floor 1, Floor 2), Flats, and Common Amenities (Clubhouse, Gymnasium, Swimming Pool).
+    \item \textbf{Edges ($E$):} Physical walkways, stairs, and elevator shafts connecting nodes.
+\end{itemize}
+
+\subsection{Graph Algorithms Implemented}
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Breadth-First Search (BFS):} Utilizes an internal FIFO queue to traverse the society layout level by level. It computes the **unweighted shortest path** from the main security gate to any resident flat or emergency facility.
+    \item \textbf{Depth-First Search (DFS):} Employs recursion to explore structural branches deeply, verifying architectural connectivity and ensuring no flat or utility node is disconnected from the main ingress.
+\end{enumerate}
+
+\subsection{Complexity Analysis}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Time Complexity (BFS \& DFS):} $\mathcal{O}(|V| + |E|)$, where $|V|$ is the number of spatial nodes and $|E|$ is the number of physical pathways.
+    \item \textbf{Space Complexity:} $\mathcal{O}(|V| + |E|)$ for the adjacency list representation, outperforming dense adjacency matrices which consume $\mathcal{O}(|V|^2)$ memory.
+\end{itemize}
+
+% ==================== SECTION 13 ====================
+\section{DSA Concept C --- Complaint Priority Queue (Binary Min-Heap)}
+
+\subsection{Theoretical Foundations}
+A **Priority Queue** is an abstract data structure where each element possesses an assigned priority value. Elements with higher priority are dequeued before elements with lower priority. BuildWise backs this structure with a **Binary Min-Heap**, stored implicitly as a contiguous array satisfying the invariant:
+\begin{equation}
+    A[\text{parent}(i)] \le A[i] \quad \text{where} \quad \text{parent}(i) = \lfloor (i - 1) / 2 \rfloor
+\end{equation}
+
+\subsection{Implementation in BuildWise}
+The \texttt{ComplaintPriorityManager} class assigns complaints a numerical severity rank:
+\begin{equation}
+    \text{CRITICAL (1)} < \text{HIGH (2)} < \text{MEDIUM (3)} < \text{LOW (4)}
+\end{equation}
+To ensure deterministic ordering among complaints with identical severity, a **Compound Comparator** is enforced:
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Primary Criterion:} Numerical Severity Rank ascending (Rank 1 sits at the root).
+    \item \textbf{Secondary Criterion (Tie-Breaker):} Submission Timestamp ascending (earlier complaints resolved first).
+\end{enumerate}
+
+\subsection{Complexity Analysis}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Peek Highest Priority:} $\mathcal{O}(1)$ constant time (inspects array index 0).
+    \item \textbf{Insert Complaint (\texttt{offer}):} $\mathcal{O}(\log N)$ time via upward sift-up heapification.
+    \item \textbf{Extract Highest Priority (\texttt{poll}):} $\mathcal{O}(\log N)$ time via downward sift-down rebalancing.
+    \item \textbf{Space Complexity:} $\mathcal{O}(N)$ contiguous memory.
+\end{itemize}
+
+% ==================== SECTION 14 ====================
+\section{DSA Concept D --- Maintenance Binary Search Tree (BST)}
+
+\subsection{Theoretical Foundations}
+A **Binary Search Tree** is a node-based binary tree data structure where each node contains a comparable key and satisfies the ordering property:
+\begin{equation}
+    \forall x \in \text{LeftSubtree}(u): \text{key}(x) < \text{key}(u) \quad \text{and} \quad \forall y \in \text{RightSubtree}(u): \text{key}(y) > \text{key}(u)
+\end{equation}
+
+\subsection{Implementation in BuildWise}
+The \texttt{MaintenanceBST} class manages monthly financial statements without relying on external third-party collections. The tree key is the string literal of the billing cycle:
+\begin{equation}
+    \text{Key} = \text{``YYYY-MM''} \quad (\text{e.g., ``2026-01''}, \text{``2026-02''}, \dots)
+\end{equation}
+Because ISO-8601 month strings preserve chronological order under standard lexicographical comparison, string comparison matches date order.
+
+\subsection{Traversals and Pruned Range Search}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Chronological Reporting (In-Order Traversal):} Traversing nodes via $\text{Left} \to \text{Root} \to \text{Right}$ outputs financial records in strictly ascending chronological order in $\mathcal{O}(N)$ time.
+    \item \textbf{Pruned Range Queries:} The \texttt{rangeSearch(startMonth, endMonth)} method inspects subtree keys and skips branches that fall completely outside the target range, running in $\mathcal{O}(H + K)$ time ($H = \text{height}$, $K = \text{matches}$).
+\end{itemize}
+
+\subsection{Complexity Analysis}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Search / Insertion Time Complexity:} Average $\mathcal{O}(\log N)$; Worst case $\mathcal{O}(N)$ if insertion sequence is strictly monotonic.
+    \item \textbf{In-Order Traversal Time Complexity:} $\mathcal{O}(N)$ visiting all nodes once.
+    \item \textbf{Range Query Time Complexity:} $\mathcal{O}(H + K)$ where $H$ is tree height and $K$ is the number of records within the range.
+\end{itemize}
+
+% ==================== SECTION 15 ====================
+\section{Other Data Structures Used}
+
+Beyond the primary four structures, BuildWise implements five additional data structures tailored to specific operational requirements:
+
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Dynamic Array (\texttt{ArrayList} --- \texttt{PaymentRecordManager}):}
+    Stores flat maintenance payments and society expenses in contiguous physical memory. Provides $\mathcal{O}(1)$ index access and takes advantage of CPU spatial cache locality during sequential financial calculations.
+    
+    \item \textbf{Doubly Linked List (\texttt{LinkedList} --- \texttt{ResidentActivityManager}):}
+    Maintains chronological activity feeds and complaint logs. Prepends newly emitted events to the head of the list via \texttt{addFirst()} in guaranteed $\mathcal{O}(1)$ time, eliminating the $\mathcal{O}(N)$ element-shifting overhead of arrays.
+    
+    \item \textbf{LIFO Stack (\texttt{Stack} --- \texttt{UndoManager}):}
+    Enforces a strict Last-In-First-Out protocol to support administrative rollbacks. Captures JSON state snapshots (the Memento pattern) and allows operations to be popped and reverted in $\mathcal{O}(1)$ time.
+    
+    \item \textbf{FIFO Queue (\texttt{ArrayDeque} --- \texttt{ComplaintQueueManager}):}
+    Powers the routine complaint scheduling pipeline. Provides $\mathcal{O}(1)$ enqueue and dequeue operations within a circular array buffer, avoiding pointer indirection and guaranteeing temporal fairness.
+    
+    \item \textbf{Hash Map and Hash Set (\texttt{HashMap}, \texttt{HashSet}):}
+    Powers the visitor security gate validation, checking active visitor phone numbers in expected $\mathcal{O}(1)$ time to prevent duplicate entry without checkout.
+\end{enumerate}
+
+% ==================== SECTION 16 ====================
+\section{Data Persistence and Dual-Layer Synchronization}
+
+BuildWise employs a **Dual-Layer Architecture** combining in-memory performance with persistent durability:
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+                         [Client Mutation Request]
+                                     |
+                                     v
+                       [Spring Boot Service Layer]
+                                     |
+                    +----------------+----------------+
+                    |                                 |
+                    v                                 v
+        [MongoDB Persistence]             [In-Memory Java Engine]
+     (Spring Data Mongo Repos)         (AVL, BST, Heap, Queue, Stack)
+                    |                                 |
+          (Disk / ACID Durable)              (Sub-Millisecond RAM)
+\end{verbatim}
+\caption{Dual-Layer Synchronization Flow}
+\label{fig:sync_flow}
+\end{figure}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Bootstrap Rehydration:} Upon application boot, \texttt{DemoDataInitializer} scans MongoDB collections and populates the in-memory data structures, reconstructing the AVL tree, BST, heaps, and building graph.
+    \item \textbf{Thread Safety:} Memory mutations are synchronized using Java object monitors (\texttt{synchronized} blocks) and concurrent collections (\texttt{CopyOnWriteArrayList}), ensuring thread safety across concurrent REST API calls.
+    \item \textbf{Data Validation Checks:}
+    \begin{itemize}
+        \item Prevents duplicate active visitor check-ins via phone number indexing.
+        \item Validates complaint resolution fields (mandatory technician remarks and work description).
+        \item Prevents maintenance overpayment and blocks duplicate monthly bill creation.
+    \end{itemize}
+\end{itemize}
+
+% ==================== SECTION 17 ====================
+\section{Time Complexity Summary}
+
+Table~\ref{tab:complexity_summary} summarizes the theoretical time and space complexities across all data structures implemented in BuildWise.
+
+% Multi-page complexity table
+\begin{xltabular}{\textwidth}{l l c c c X}
+\caption{Master Algorithmic Complexity Table} \label{tab:complexity_summary} \\
+\toprule
+\textbf{Data Structure} & \textbf{Component Class} & \textbf{Access} & \textbf{Search} & \textbf{Insert/Delete} & \textbf{Operational Advantage} \\
+\midrule
+\endfirsthead
+
+\multicolumn{6}{c}{\textit{Table \ref{tab:complexity_summary} (Continued from previous page)}} \\
+\toprule
+\textbf{Data Structure} & \textbf{Component Class} & \textbf{Access} & \textbf{Search} & \textbf{Insert/Delete} & \textbf{Operational Advantage} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{6}{r}{\textit{Continued on next page\dots}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+\textbf{AVL Tree} & \texttt{ResidentAVLTree} & $\mathcal{O}(\log N)$ & $\mathcal{O}(\log N)$ & $\mathcal{O}(\log N)$ & Guaranteed logarithmic balance; immune to sorted flat skew. \\
+\textbf{Custom BST} & \texttt{MaintenanceBST} & $\mathcal{O}(H)$ & $\mathcal{O}(H)$ & $\mathcal{O}(H)$ & In-order traversal yields chronological reports in $\mathcal{O}(N)$. \\
+\textbf{Min-Heap (PQ)} & \texttt{ComplaintPriorityMgr} & $\mathcal{O}(1)$ & $\mathcal{O}(N)$ & $\mathcal{O}(\log N)$ & Root peek in $\mathcal{O}(1)$; instant triage for emergency tickets. \\
+\textbf{FIFO Queue} & \texttt{ComplaintQueueMgr} & $\mathcal{O}(1)$ & $\mathcal{O}(N)$ & $\mathcal{O}(1)$ & Strict First-Come First-Served fairness; zero starvation. \\
+\textbf{LIFO Stack} & \texttt{UndoManager} & $\mathcal{O}(1)$ & $\mathcal{O}(N)$ & $\mathcal{O}(1)$ & Strict Last-In First-Out state reversal for administrative undo. \\
+\textbf{Linked List} & \texttt{ResidentActivityMgr} & $\mathcal{O}(N)$ & $\mathcal{O}(N)$ & $\mathcal{O}(1)$ head & Instant $\mathcal{O}(1)$ prepending without array reallocation penalties. \\
+\textbf{Dynamic Array} & \texttt{PaymentRecordMgr} & $\mathcal{O}(1)$ & $\mathcal{O}(N)$ & $\mathcal{O}(1)$ amort. & Optimal contiguous CPU cache locality for bulk calculations. \\
+\textbf{Graph (Adj. List)}& \texttt{BuildingGraph} & --- & $\mathcal{O}(V+E)$ & $\mathcal{O}(1)$ edge & Models multi-path topologies; BFS computes shortest paths. \\
+\textbf{Hash Map / Set} & \texttt{VisitorService} & $\mathcal{O}(1)$ avg & $\mathcal{O}(1)$ avg & $\mathcal{O}(1)$ avg & Instant gate duplicate detection independent of volume $N$. \\
+\end{xltabular}
+
+% ==================== SECTION 18 ====================
+\section{Testing Checklist}
+
+Table~\ref{tab:testing_checklist} provides the verification checklist validating functional correctness and algorithmic invariants.
+
+% Multi-page testing checklist table
+\begin{xltabular}{\textwidth}{p{4.2cm} X c}
+\caption{System Verification and Algorithmic Testing Checklist} \label{tab:testing_checklist} \\
+\toprule
+\textbf{Test Scenario} & \textbf{Expected Algorithmic / Functional Outcome} & \textbf{Status} \\
+\midrule
+\endfirsthead
+
+\multicolumn{3}{c}{\textit{Table \ref{tab:testing_checklist} (Continued from previous page)}} \\
+\toprule
+\textbf{Test Scenario} & \textbf{Expected Algorithmic / Functional Outcome} & \textbf{Status} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{3}{r}{\textit{Continued on next page\dots}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+\textbf{Sequential Resident Insert} & Inserting sequential flats (\texttt{A-101}, \texttt{A-102}, \texttt{A-103}) triggers RR/LL rotations in AVL tree, maintaining $BF \in \{-1,0,1\}$. & Verified \\
+\textbf{AVL Resident Lookup} & Searching flat \texttt{A-102} returns resident profile within at most $\lceil 1.44 \log_2 N \rceil$ comparisons. & Verified \\
+\textbf{Routine FIFO Enqueue} & Low-priority complaint is queued; worker dequeue returns the oldest submitted ticket. & Verified \\
+\textbf{Emergency Heap Triage} & Submitting a \texttt{CRITICAL} complaint bubbles it directly to the Min-Heap root, bypassing older routine tickets. & Verified \\
+\textbf{BST In-Order Generation} & Traversal of maintenance records outputs monthly financial summaries in ascending chronological order. & Verified \\
+\textbf{BST Range Query} & Querying range \texttt{2026-01} to \texttt{2026-03} prunes subtrees outside the range, returning only matching quarters. & Verified \\
+\textbf{Graph Shortest Path} & BFS traversal from \texttt{FAC-GATE} to \texttt{FAC-POOL} outputs the path with minimum physical hops. & Verified \\
+\textbf{Administrative Undo} & Deleting a resident pushes memento to Stack; clicking Undo restores the resident in both RAM and MongoDB. & Verified \\
+\textbf{Active Visitor Validation} & Attempting to check in a visitor with an already active phone number is blocked with an error. & Verified \\
+\textbf{Engine Monitor Sync} & UI Data Structure Monitor accurately displays live AVL rotations, queue sizes, and heap orders. & Verified \\
+\end{xltabular}
+
+% ==================== SECTION 19 ====================
+\section{Limitations and Future Scope}
+
+\subsection{Current Limitations}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Single-Node JVM Memory Bounds:} The In-Memory Data Structure Engine resides within a single JVM process. Under horizontal clustering, in-memory structures require distributed coordination.
+    \item \textbf{Unweighted Physical Graphs:} The building topology currently computes shortest path by topological hop count; physical corridor distances and elevator travel times are not weighted.
+    \item \textbf{Non-Self-Balancing BST for Maintenance:} While the resident registry uses a self-balancing AVL tree, the monthly maintenance ledger uses a standard BST which could skew if dates are entered monotonically over many decades.
+\end{itemize}
+
+\subsection{Future Scope and Enhancements}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Dijkstra and A* Navigation:} Enhance \texttt{BuildingGraph} with edge weights (meters and elevator delay seconds) to calculate real-world walking times for delivery personnel and emergency services.
+    \item \textbf{Prefix Trie for Autocomplete:} Implement a Trie data structure to support instant $O(L)$ prefix searching across resident names, vehicle numbers, and flat numbers in the global search bar.
+    \item \textbf{Red-Black Tree Comparison:} Integrate a Red-Black Tree alongside the AVL Tree to benchmark rebalancing overhead under write-intensive workloads.
+    \item \textbf{Distributed Caching:} Integrate Redis to synchronize data structures across multi-instance cloud deployments.
+\end{itemize}
+
+% ==================== SECTION 20 ====================
+\section{Conclusion}
+
+The \textbf{BuildWise} Residential Building Management System bridges theoretical Computer Science education with production enterprise software engineering. By engineering native Java data structures directly into the application backend:
+\begin{itemize}[leftmargin=1.5em]
+    \item Resident indexing achieves guaranteed $\mathcal{O}(\log N)$ logarithmic performance via **Self-Balancing AVL Trees**.
+    \item Society grievances are managed through a **Dual-Pipeline Architecture** pairing **FIFO Queues** for fairness with **Binary Min-Heaps** for emergency triage.
+    \item Financial ledgers leverage custom **Binary Search Trees** for chronological in-order reporting and sub-tree pruned range queries.
+    \item Society layouts are modeled using an **Adjacency List Graph** traversed via **Breadth-First Search (BFS)** for shortest path routing.
+    \item Administrative fault-tolerance is achieved through **LIFO Stacks** executing constant-time $\mathcal{O}(1)$ operational undos.
+\end{itemize}
+Synchronized with MongoDB persistence and monitored through an interactive React interface, BuildWise demonstrates that sound data structure selection is the primary determinant of software performance, stability, and elegance.
+
+\end{document}
